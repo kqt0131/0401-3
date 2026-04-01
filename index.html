@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shenzhen 5D4N Itinerary</title>
+    <style>
+        :root {
+            --primary-color: #007AFF;
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-color: #1d1d1f;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 導航欄與切換器 */
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .lang-switcher button {
+            padding: 8px 12px;
+            margin-left: 5px;
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .lang-switcher button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* 內容區 */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .day-section {
+            display: none; /* 預設隱藏，由 JS 控制顯示 */
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .day-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .spot {
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 4px solid #eee;
+        }
+
+        .map-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 15px;
+            background-color: #4285F4;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .map-btn:hover {
+            background-color: #3367D6;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Shenzhen Trip 2026</div>
+    <div class="lang-switcher">
+        <button onclick="switchLang('zh')" id="btn-zh" class="active">中文</button>
+        <button onclick="switchLang('en')" id="btn-en">EN</button>
+        <button onclick="switchLang('jp')" id="btn-jp">JP</button>
+    </div>
+</header>
+
+<div class="container" id="content-area">
+    </div>
+
+<footer>
+    © 2026 Shenzhen Travel Guide | Powered by Gemini
+</footer>
+
+<script>
+const data = {
+    zh: {
+        days: [
+            { title: "Day 1: 南山科技與都會魅力", spots: [
+                { name: "南頭古城", desc: "1700年歷史與現代文創的碰撞。", q: "Nantou+Ancient+City" },
+                { name: "萬象天地 (MixC World)", desc: "打卡地標「抱抱象」，逛潮流旗艦店。", q: "MixC+World+Shenzhen" },
+                { name: "歡樂港灣", desc: "搭乘「灣區之光」摩天輪欣賞絕美夜景。", q: "OH+Bay+Shenzhen" }
+            ]},
+            { title: "Day 2: 世界縮影與藝術洗禮", spots: [
+                { name: "世界之窗", desc: "一站式打卡全球著名地標縮影。", q: "Window+of+the+World+Shenzhen" },
+                { name: "深業上城 (UpperHills)", desc: "彩色幾何建築群，網紅拍照聖地。", q: "UpperHills+Shenzhen" },
+                { name: "平安金融中心 (PAFC)", desc: "登上深圳最高樓俯瞰全城。", q: "Ping+An+Finance+Center" }
+            ]}
+        ],
+        btnText: "地圖導航"
+    },
+    en: {
+        days: [
+            { title: "Day 1: Nanshan Tech & Heritage", spots: [
+                { name: "Nantou Ancient City", desc: "1,700 years of history meets modern creativity.", q: "Nantou+Ancient+City" },
+                { name: "MixC World", desc: "Iconic Bubblecoat Elephant & flagship stores.", q: "MixC+World+Shenzhen" },
+                { name: "OH Bay", desc: "Bay Glory Ferris wheel & harbor views.", q: "OH+Bay+Shenzhen" }
+            ]},
+            { title: "Day 2: World Icons & Skyline", spots: [
+                { name: "Window of the World", desc: "Miniatures of world-famous landmarks.", q: "Window+of+the+World+Shenzhen" },
+                { name: "UpperHills", desc: "Colorful geometric architecture.", q: "UpperHills+Shenzhen" },
+                { name: "PAFC", desc: "View the city from the tallest building.", q: "Ping+An+Finance+Center" }
+            ]}
+        ],
+        btnText: "Google Maps"
+    },
+    jp: {
+        days: [
+            { title: "1日目：南山のテクノロジーと歴史", spots: [
+                { name: "南頭古城", desc: "1700年の歴史と現代アートの融合。", q: "Nantou+Ancient+City" },
+                { name: "万象天地", desc: "巨大な象のオブジェがシンボルのモール。", q: "MixC+World+Shenzhen" },
+                { name: "歡樂港灣 (OH Bay)", desc: "大観覧車から美しい夜景を堪能。", q: "OH+Bay+Shenzhen" }
+            ]},
+            { title: "2日目：世界の縮図とスカイライン", spots: [
+                { name: "世界之窓", desc: "世界中の有名建築がミニチュアで集結。", q: "Window+of+the+World+Shenzhen" },
+                { name: "深業上城 (UpperHills)", desc: "カラフルな建築群、撮影スポット。", q: "UpperHills+Shenzhen" },
+                { name: "平安国際金融中心", desc: "展望台から深センの街を一望。", q: "Ping+An+Finance+Center" }
+            ]}
+        ],
+        btnText: "マップ導覽"
+    }
+};
+
+function switchLang(lang) {
+    // 切換按鈕狀態
+    document.querySelectorAll('.lang-switcher button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`btn-${lang}`).classList.add('active');
+
+    const contentArea = document.getElementById('content-area');
+    contentArea.innerHTML = ''; // 清空內容
+
+    // 生成新內容
+    data[lang].days.forEach(day => {
+        let section = document.createElement('div');
+        section.className = 'day-section active';
+        
+        let html = `<h2>${day.title}</h2>`;
+        day.spots.forEach(spot => {
+            html += `
+                <div class="spot">
+                    <strong>${spot.name}</strong>
+                    <p style="margin: 5px 0; font-size: 0.9rem; color: #555;">${spot.desc}</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${spot.q}" 
+                       target="_blank" class="map-btn">📍 ${data[lang].btnText}</a>
+                </div>
+            `;
+        });
+        section.innerHTML = html;
+        contentArea.appendChild(section);
+    });
+}
+
+// 初始加載中文版
+window.onload = () => switchLang('zh');
+</script>
+
+</body>
+</html>
